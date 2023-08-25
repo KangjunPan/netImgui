@@ -19,4 +19,5 @@ uint64_t GetStatsDataSent();
 // Total amount of data received from clients since start
 uint64_t GetStatsDataRcvd();
 
+const char* GetCurrentIPv4Address();
 }}

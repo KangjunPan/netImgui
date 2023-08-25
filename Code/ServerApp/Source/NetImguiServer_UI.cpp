@@ -761,7 +761,9 @@ void DrawImguiContent_MainMenu_Stats()
 		connected	+= client.mbIsConnected ? 1 : 0;
 	}
 
-	ImGui::SameLine(0.f, ImGui::GetContentRegionAvail().x-200.f);
+	ImGui::SameLine(0.f, ImGui::GetContentRegionAvail().x-350.f);
+	ImGui::TextColored(kColorContent, "IPv4 Address: [%s]", NetImguiServer::Network::GetCurrentIPv4Address());
+	ImGui::SameLine();
 	ImGui::TextColored(kColorContent, "(Rx) %iKB/s   (Tx) %iKB/s", rxKBs, txKBs);
 	if (ImGui::IsItemHovered())
 	{

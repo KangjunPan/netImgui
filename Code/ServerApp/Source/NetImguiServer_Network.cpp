@@ -7,6 +7,13 @@
 #include "NetImguiServer_RemoteClient.h"
 #include "NetImguiServer_Config.h"
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#if defined(_MSC_VER)
+#pragma comment(lib, "ws2_32")
+#endif
+
 namespace NetImguiServer { namespace Network
 {
 
@@ -409,6 +416,40 @@ uint64_t GetStatsDataSent()
 uint64_t GetStatsDataRcvd()
 {
 	return gStatsDataRcvd;
+}
+
+const char* GetCurrentIPv4Address()
+{
+	WSADATA wsaData;
+	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+		return "0.0.0.0";
+	}
+
+	char hostname[NI_MAXHOST];
+	iResult = gethostname(hostname, NI_MAXHOST);
+	if (iResult != 0) {
+		WSACleanup();
+		return "0.0.0.0";
+	}
+
+	struct addrinfo hints, * res = NULL;
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_INET;
+
+	iResult = getaddrinfo(hostname, NULL, &hints, &res);
+	if (iResult != 0) {
+		WSACleanup();
+		return "0.0.0.0";
+	}
+
+	struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+	char *ip = new char[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(ipv4->sin_addr), ip, INET_ADDRSTRLEN);
+
+	freeaddrinfo(res);
+	WSACleanup();
+	return ip;
 }
 
 }} // namespace NetImguiServer { namespace Network
